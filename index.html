@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Position Based on Nearest Element</title>
+    <style>
+        body {
+            display: flex;
+            flex-wrap: wrap;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            /* position: relative; */
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .box {
+            width: 100px;
+            height: 100px;
+            margin: 20px;
+            background-color: lightblue;
+            border: 2px solid #000;
+            position: relative; /* 使每个盒子相对于其正常位置进行定位 */
+        }
+        .target {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute; /* 绝对定位，以便根据最近元素的位置进行移动 */
+            transition: all 0.3s ease; /* 添加过渡效果 */
+        }
+    </style>
+</head>
+<body>
+    <div class="box" style="background-color: lightcoral;"></div>
+    <div class="box" style="background-color: lightgreen;"></div>
+    <div class="box" style="background-color: lightyellow;"></div>
+    <div class="box" style="background-color: lightpink;"></div>
+    <div class="target"></div> <!-- 目标盒子 -->
+    
+    <script>
+        document.body.addEventListener('click', function(event) {
+            const boxes = document.querySelectorAll('.box');
+            let closestElement = null;
+            let closestDistance = Infinity;
+
+            boxes.forEach(box => {
+                const rect = box.getBoundingClientRect();
+                const boxCenterX = rect.left + rect.width / 2;
+                const boxCenterY = rect.top + rect.height / 2;
+
+                // 计算与点击位置的距离
+                const distance = Math.sqrt(
+                    Math.pow(boxCenterX - event.clientX, 2) + 
+                    Math.pow(boxCenterY - event.clientY, 2)
+                );
+
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestElement = box;
+                }
+            });
+
+            // 如果找到了最近的元素，改变目标盒子的位置
+            if (closestElement) {
+                const closestRect = closestElement.getBoundingClientRect();
+                const target = document.querySelector('.target');
+
+                // 计算目标盒子的新位置（调整位置以使其不重叠）
+                target.style.left = `${closestRect.left + closestRect.width + 10}px`; // 目标盒子移动到最近元素的右侧
+                target.style.top = `${closestRect.top + (closestRect.height - target.offsetHeight) / 2}px`; // 垂直居中
+            }
+        });
+    </script>
+</body>
+</html>
